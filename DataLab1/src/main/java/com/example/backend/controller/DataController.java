@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/data")
@@ -23,6 +26,20 @@ public class DataController {
             return ResponseEntity.ok("Данные успешно сохранены в файл");
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Ошибка записи: " + e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<String> readData() {
+        Path path = Paths.get(FILE_PATH);
+        if (!Files.exists(path)) {
+            return ResponseEntity.ok("Файл пока пуст.");
+        }
+        try {
+            String content = Files.readString(path);
+            return ResponseEntity.ok(content);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("Ошибка чтения: " + e.getMessage());
         }
     }
 }
